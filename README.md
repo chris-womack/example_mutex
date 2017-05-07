@@ -1,2 +1,2 @@
-# mutex_example
-Example code for creating 2 Linux POSIX threads and synchronizing their execution using a mutex on the Beaglebone Black platform running Debian Linux.
+# CSCI 3753 - mutex
+Example code for creating 2 Linux POSIX threads and synchronizing their execution using a mutex on Linux.
