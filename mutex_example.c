@@ -15,6 +15,7 @@
 #include <signal.h>
 #include <util/util.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 pthread_t thread1;
 pthread_t thread2;
