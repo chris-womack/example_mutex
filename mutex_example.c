@@ -2,11 +2,7 @@
  * 2 threads and synchronizing  
  * their operation using a mutex.
  *
- * All code provided is as is 
- * and not completely tested
- *
- * Author: Aadil Rizvi
- * Date: 12/30/2015
+ * Author: Chris Womack
 */
 
 #include <stdio.h>
@@ -19,8 +15,9 @@
 
 pthread_t thread1;
 pthread_t thread2;
-pthread_mutex_t my_mutex;
+pthread_mutex_t crit_sec_mutex;
 
+// shared resource
 static unsigned int counter;
 
 void thread1_main(void);
@@ -33,12 +30,10 @@ void sig_handler(int signum) {
         ASSERT(signum == SIGINT);
     }
 
-    printf("Received SIGINT. Exiting Application\n");
+    printf("Received SIGINT. Executing pthread cancel for thread 1 & 2\n");
 
     pthread_cancel(thread1);
     pthread_cancel(thread2);
-
-    exit(0);
 }
 
 int main(void) {
@@ -68,19 +63,16 @@ int main(void) {
 
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
-
-    sig_handler(SIGINT);
-    
+   
+    printf("Returned to main after pthread_join for thread 1 & 2\n");
     return 0;
 }
 
 void thread1_main(void) {
     unsigned int exec_period_usecs;
-
     exec_period_usecs = 1000000; /*in micro-seconds*/
 
-    printf("Thread 1 started. Execution period = %d uSecs\n",\
-                                           exec_period_usecs);
+    printf("Thread 1 started. Execution period = %d uSecs\n", exec_period_usecs);
     while(1) {
         usleep(exec_period_usecs);
         counter_oper(1);
@@ -90,12 +82,9 @@ void thread1_main(void) {
 
 void thread2_main(void) {
     unsigned int exec_period_usecs;
-
     exec_period_usecs = 1000000; /*in micro-seconds*/
-
-    printf("Thread 2 started. Execution period = %d uSecs\n",\
-                                           exec_period_usecs);
-
+    
+    printf("Thread 2 started. Execution period = %d uSecs\n", exec_period_usecs);
     while(1) {
         usleep(exec_period_usecs);
         counter_oper(2);
@@ -106,21 +95,19 @@ void counter_oper(int thread_num) {
     int i;
     struct timeval ts;
 
-    pthread_mutex_lock(&my_mutex);
-    gettimeofday(&ts, NULL);
+    // critical section
+    // only one thread can execute this portion at a time
+    pthread_mutex_lock(&crit_sec_mutex); // lock critical section
+    gettimeofday(&ts, NULL); // move into loop to create deadlock
     printf("\n");
  
-    for (i=0; i<5; i++) {
-        counter += 1;
-        printf("%06ld.%06ld: Thread %d, counter =  %d\n",\
-                                               ts.tv_sec,\
-                                               ts.tv_usec,\
-                                               thread_num,\
-                                               counter);
-        usleep(50);
+    for (i=0; i<10; i++) {
+        counter += 1; // shared resource 
+        printf("%06ld.%06ld: Thread %d, counter =  %d\n", ts.tv_sec, ts.tv_usec, thread_num, counter);
+        //usleep(1000000);
     }
 
     printf("\n"); 
-    pthread_mutex_unlock(&my_mutex);
+    pthread_mutex_unlock(&crit_sec_mutex); // unlock critical section
 }
 
