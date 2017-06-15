@@ -79,7 +79,7 @@ void thread1_main(void) {
 
     // setup sleep period between counter
     unsigned int exec_period_usecs;
-    exec_period_usecs = EXECTIME; /*in micro-seconds*/
+    //exec_period_usecs = EXECTIME; /*in micro-seconds*/
 
     printf("Thread 1 started. Execution period = %d uSecs\n", exec_period_usecs);
     while(1) {
@@ -93,7 +93,7 @@ void thread2_main(void) {
 
     // setup sleep period between counter
     unsigned int exec_period_usecs;
-    exec_period_usecs = EXECTIME; /*in micro-seconds*/
+    //exec_period_usecs = EXECTIME; /*in micro-seconds*/
 
     printf("Thread 2 started. Execution period = %d uSecs\n", exec_period_usecs);
     while(1) {
@@ -109,12 +109,15 @@ void counter_oper(int thread_num) {
     // critical section
     // with the lock and unlock commented out, thread 1 and 2 can enter critical section at will
     // pthread_mutex_lock(&crit_sec_mutex);
-    gettimeofday(&ts, NULL);
+    //gettimeofday(&ts, NULL);
     printf("\n");
 
     for (i=0; i<10; i++) {
         counter += 1; // shared resource
-        printf("%06ld.%06ld: Thread %d, counter =  %d\n", ts.tv_sec, ts.tv_usec, thread_num, counter);
+        usleep(EXECTIME);  // wait
+
+        //printf("%06ld.%06ld: Thread %d, counter =  %d\n", ts.tv_sec, ts.tv_usec, thread_num, counter);
+        printf("Thread %d, counter =  %d\n", thread_num, counter);
     }
 
     printf("\n");
