@@ -109,7 +109,7 @@ void counter_oper(int thread_num) {
     // critical section
     // with the lock and unlock commented out, thread 1 and 2 can enter critical section at will
     // pthread_mutex_lock(&crit_sec_mutex);
-    //gettimeofday(&ts, NULL);
+    gettimeofday(&ts, NULL);
     printf("\n");
 
     for (i=0; i<10; i++) {
